@@ -22,7 +22,7 @@ void ctrl_init() {
 
 void ctrl_run() {
     model_configure(20, 20);
-    model_populate();
+    model_populate_randomly(0.2);
     ctrl_thread_start();
     view_run();
 }

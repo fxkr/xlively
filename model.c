@@ -10,6 +10,7 @@ Model model;
 pthread_mutex_t model_mutex;
 
 void model_init() {
+    srand(time(NULL));
     model.width = 0;
     model.height = 0;
     free(model.array);
@@ -40,6 +41,14 @@ void model_populate() {
     }
     if (model_is_valid_coord(1, 2)) {
         model_set(3, 2, true);
+    }
+}
+
+void model_populate_randomly(float percentage) {
+    for (int y = 0; y < model.height; y++) {
+        for (int x = 0; x < model.width; x++) {
+            model_set(x, y, ((double)rand() / RAND_MAX) < percentage);
+        }
     }
 }
 

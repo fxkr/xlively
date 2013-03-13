@@ -13,6 +13,7 @@ void model_init(void);
 void model_exit(void);
 void model_configure(int width, int height);
 void model_populate(void);
+void model_populate_randomly(float percentage);
 bool model_is_valid_coord(int x, int y);
 int model_coord_to_index(int x, int y);
 void model_set(int x, int y, _Bool alive);
