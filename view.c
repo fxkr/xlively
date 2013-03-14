@@ -21,6 +21,7 @@ Pixmap clip_mask;
 GC gc;
 GC gc_clip;
 
+void view_reinit_buffers(void);
 bool view_handle(XEvent event);
 Window view_get_root_window(Display *dpy);
 Window view_get_new_window(Display *dpy);
@@ -40,15 +41,19 @@ void view_init() {
     XAllocNamedColor(dpy, map, "white", &white, &exactColor);
 
     XGetWindowAttributes(dpy, wnd, &wnd_attr);
-    gc = XCreateGC(dpy, wnd, 0, NULL);
     XSelectInput(dpy, wnd, ExposureMask);
-    wnd_buffer = XCreatePixmap(dpy, wnd, wnd_attr.width, wnd_attr.height, wnd_attr.depth);
-    clip_mask = XCreatePixmap(dpy, wnd_buffer, wnd_attr.width, wnd_attr.height, 1);
-    gc_clip = XCreateGC(dpy, clip_mask, 0, NULL);
+    view_reinit_buffers();
 
     Atom wmDeleteMessage = XInternAtom(dpy, "WM_DELETE_WINDOW", false);
 
     XSetWMProtocols(dpy, wnd, &wmDeleteMessage, 1);
+}
+
+void view_reinit_buffers() {
+    gc = XCreateGC(dpy, wnd, 0, NULL);
+    wnd_buffer = XCreatePixmap(dpy, wnd, wnd_attr.width, wnd_attr.height, wnd_attr.depth);
+    clip_mask = XCreatePixmap(dpy, wnd_buffer, wnd_attr.width, wnd_attr.height, 1);
+    gc_clip = XCreateGC(dpy, clip_mask, 0, NULL);
 }
 
 void view_run() {
@@ -64,7 +69,11 @@ bool view_handle(XEvent event) {
     if (event.type == Expose) {
         while (XCheckWindowEvent(dpy, wnd, ExposureMask, &event)) {
         }
+        int old_w = wnd_attr.width, old_h = wnd_attr.height;
         XGetWindowAttributes(dpy, wnd, &wnd_attr);
+        if (old_w != wnd_attr.width || old_h != wnd_attr.height) {
+            view_reinit_buffers();
+        }
         view_redraw();
     } else if (event.type == ClientMessage && event.xclient.data.l[0] == wmDeleteMessage) {
         return false; // stop event loop
