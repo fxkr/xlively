@@ -17,8 +17,9 @@ Display *dpy;
 Window wnd;
 XWindowAttributes wnd_attr;
 Pixmap wnd_buffer;
+Pixmap clip_mask;
 GC gc;
-
+GC gc_clip;
 
 bool view_handle(XEvent event);
 Window view_get_root_window(Display *dpy);
@@ -42,6 +43,8 @@ void view_init() {
     gc = XCreateGC(dpy, wnd, 0, NULL);
     XSelectInput(dpy, wnd, ExposureMask);
     wnd_buffer = XCreatePixmap(dpy, wnd, wnd_attr.width, wnd_attr.height, wnd_attr.depth);
+    clip_mask = XCreatePixmap(dpy, wnd_buffer, wnd_attr.width, wnd_attr.height, 1);
+    gc_clip = XCreateGC(dpy, clip_mask, 0, NULL);
 
     Atom wmDeleteMessage = XInternAtom(dpy, "WM_DELETE_WINDOW", false);
 
@@ -108,23 +111,30 @@ Display* view_get_display() {
 void view_redraw() {
     model_acquire_mutex();
 
-    // Background
+    // Background and clipmask
     XSetBackground(dpy, gc, black.pixel);
     XSetForeground(dpy, gc, black.pixel);
     XFillRectangle(dpy, wnd_buffer, gc, 0, 0, wnd_attr.width, wnd_attr.height);
+    XSetBackground(dpy, gc_clip, 0);
+    XSetForeground(dpy, gc_clip, 0);
+    XFillRectangle(dpy, clip_mask, gc_clip, 0, 0, wnd_attr.width, wnd_attr.height);
 
     // Draw cells
     XSetBackground(dpy, gc, white.pixel);
     XSetForeground(dpy, gc, white.pixel);
+    XSetBackground(dpy, gc_clip, 1);
+    XSetForeground(dpy, gc_clip, 1);
     for (int y = 0; y < model_get_height(); y++) {
         for (int x = 0; x < model_get_width(); x++) {
             if (model_get(x, y)) {
                 XFillRectangle(dpy, wnd_buffer, gc, x*25, y*25, 20, 20);
+                XFillRectangle(dpy, clip_mask, gc_clip, x*25, y*25, 20, 20);
             }
         }
     }
 
     // Copy to window
+    XSetClipMask(dpy, gc, clip_mask);
     XCopyArea(dpy, wnd_buffer, wnd, gc, 0, 0, wnd_attr.width, wnd_attr.height, 0, 0);
 
     model_release_mutex();
