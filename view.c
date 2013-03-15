@@ -148,16 +148,19 @@ void view_redraw() {
     XFillRectangle(dpy, clip_mask, gc_clip, 0, 0, wnd_attr.width, wnd_attr.height);
 
     // Draw cells
-    XSetBackground(dpy, gc, white.pixel);
-    XSetForeground(dpy, gc, white.pixel);
     XSetBackground(dpy, gc_clip, 1);
     XSetForeground(dpy, gc_clip, 1);
     for (int y = 0; y < model_get_height(); y++) {
         for (int x = 0; x < model_get_width(); x++) {
             if (model_get(x, y)) {
-                XFillRectangle(dpy, wnd_buffer, gc, x*25, y*25, 20, 20);
-                XFillRectangle(dpy, clip_mask, gc_clip, x*25, y*25, 20, 20);
+                XSetBackground(dpy, gc, white.pixel);
+                XSetForeground(dpy, gc, white.pixel);
+            } else {
+                XSetBackground(dpy, gc, black.pixel);
+                XSetForeground(dpy, gc, black.pixel);
             }
+            XFillRectangle(dpy, wnd_buffer, gc, x*25, y*25, 20, 20);
+            XFillRectangle(dpy, clip_mask, gc_clip, x*25, y*25, 20, 20);
         }
     }
 
