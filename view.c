@@ -21,6 +21,10 @@ Pixmap clip_mask;
 GC gc;
 GC gc_clip;
 
+Atom wmDeleteMessage;
+Atom wmPleaseRedrawMessage;
+
+
 void view_reinit_buffers(void);
 bool view_handle(XEvent event);
 Window view_get_root_window(Display *dpy);
@@ -41,10 +45,11 @@ void view_init() {
     XAllocNamedColor(dpy, map, "white", &white, &exactColor);
 
     XGetWindowAttributes(dpy, wnd, &wnd_attr);
-    XSelectInput(dpy, wnd, ExposureMask);
+    XSelectInput(dpy, wnd, ExposureMask | StructureNotifyMask);
     view_reinit_buffers();
 
-    Atom wmDeleteMessage = XInternAtom(dpy, "WM_DELETE_WINDOW", false);
+    wmDeleteMessage = XInternAtom(dpy, "WM_DELETE_WINDOW", false);
+    wmPleaseRedrawMessage = XInternAtom(dpy, "WM_PLEASE_REDRAW", false); // custom
 
     XSetWMProtocols(dpy, wnd, &wmDeleteMessage, 1);
 }
@@ -65,17 +70,20 @@ void view_run() {
 }
 
 bool view_handle(XEvent event) {
-    Atom wmDeleteMessage = XInternAtom(dpy, "WM_DELETE_WINDOW", false);
-    if (event.type == Expose) {
-        while (XCheckWindowEvent(dpy, wnd, ExposureMask, &event)) {
-        }
+    if (event.type == ConfigureNotify) {
         int old_w = wnd_attr.width, old_h = wnd_attr.height;
         XGetWindowAttributes(dpy, wnd, &wnd_attr);
         if (old_w != wnd_attr.width || old_h != wnd_attr.height) {
             view_reinit_buffers();
         }
+    } else if (event.type == Expose &&
+               event.xexpose.count == 0) {
         view_redraw();
-    } else if (event.type == ClientMessage && event.xclient.data.l[0] == wmDeleteMessage) {
+    } else if (event.type == ClientMessage &&
+               event.xclient.message_type == wmPleaseRedrawMessage) {
+        view_redraw();
+    } else if (event.type == ClientMessage &&
+               event.xclient.data.l[0] == wmDeleteMessage) {
         return false; // stop event loop
     }
     return true;
@@ -87,9 +95,20 @@ void view_exit() {
 }
 
 void view_notify() {
-    XClientMessageEvent xevent;
-    xevent.type = Expose;
-    XSendEvent(dpy, wnd, 0, 0, (XEvent *)&xevent);
+    XEvent event;
+    event.xclient.type = ClientMessage;
+    event.xclient.serial = 0;
+    event.xclient.send_event = True;
+    event.xclient.display = dpy;
+    event.xclient.window = wnd;
+    event.xclient.message_type = wmPleaseRedrawMessage;
+    event.xclient.format = 32;
+    event.xclient.data.l[0] = 0;
+    event.xclient.data.l[1] = 0;
+    event.xclient.data.l[2] = 0;
+    event.xclient.data.l[3] = 0;
+    event.xclient.data.l[4] = 0;
+    XSendEvent(dpy, wnd, 0, ExposureMask, &event);
     XFlush(dpy);
 }
 
