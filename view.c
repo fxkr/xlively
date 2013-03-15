@@ -7,6 +7,7 @@
 #include<stdlib.h>
 #include<unistd.h>
 
+#include "config.h"
 #include "model.h"
 
 
@@ -38,7 +39,14 @@ void view_init() {
     XInitThreads(); // we are multithreaded; must be first Xlib call
 
     dpy = view_get_display();
-    wnd = view_get_new_window(dpy);
+    if (config.mode == WINDOW) {
+        wnd = view_get_new_window(dpy);
+    } else if (config.mode == FULLSCREEN) {
+        wnd = view_get_new_window(dpy);
+        view_set_fullscreen(true);
+    } else if (config.mode == ROOT) {
+        wnd = view_get_root_window(dpy);
+    }
 
     Colormap map = DefaultColormapOfScreen(DefaultScreenOfDisplay(dpy));
     XColor exactColor; // don't care
