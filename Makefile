@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-std=c99 -Wall
+CFLAGS=-std=c99 -Wall -O2
 LIBS=-lm -lX11 -lpthread -lpopt
 
 DEPS=
