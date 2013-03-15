@@ -25,6 +25,7 @@ Atom wmDeleteMessage;
 Atom wmPleaseRedrawMessage;
 
 
+void view_set_fullscreen(bool state);
 void view_reinit_buffers(void);
 bool view_handle(XEvent event);
 Window view_get_root_window(Display *dpy);
@@ -52,6 +53,30 @@ void view_init() {
     wmPleaseRedrawMessage = XInternAtom(dpy, "WM_PLEASE_REDRAW", false); // custom
 
     XSetWMProtocols(dpy, wnd, &wmDeleteMessage, 1);
+}
+
+void view_set_fullscreen(bool state) {
+    if (wnd == None && wnd != DefaultRootWindow(dpy)) {
+        return;
+    }
+
+    Atom atomFullscreen = XInternAtom(dpy, "_NET_WM_STATE_FULLSCREEN", True);
+    Atom atomState = XInternAtom(dpy, "_NET_WM_STATE", True);
+    XEvent event;
+    event.xclient.type = ClientMessage;
+    event.xclient.type = ClientMessage;
+    event.xclient.serial = 0;
+    event.xclient.send_event = True;
+    event.xclient.window = wnd;
+    event.xclient.message_type = atomState;
+    event.xclient.format = 32;
+    event.xclient.data.l[0] = 1;
+    event.xclient.data.l[1] = atomFullscreen;
+    event.xclient.data.l[2] = 0;
+    XSendEvent(dpy, DefaultRootWindow(dpy), 0,
+        SubstructureRedirectMask | SubstructureNotifyMask,
+        &event);
+    XFlush(dpy);
 }
 
 void view_reinit_buffers() {
