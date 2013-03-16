@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-std=c99 -Wall -O2
+CFLAGS=-std=c99 -Wall -O2 -finline-functions
 LIBS=-lm -lX11 -lpthread -lpopt
 
 DEPS=
