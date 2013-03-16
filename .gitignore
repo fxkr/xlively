@@ -4,5 +4,6 @@
 *~
 
 /xlively
+/benchmark
 *.o
 
