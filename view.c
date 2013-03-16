@@ -180,6 +180,10 @@ void view_redraw() {
     XSetForeground(dpy, gc_clip, 0);
     XFillRectangle(dpy, clip_mask, gc_clip, 0, 0, wnd_attr.width, wnd_attr.height);
 
+    int grid_px = config.grid;
+    int cell_px = config.grid - 2 * config.border;
+    int border_px = config.border;
+
     // Draw cells
     XSetBackground(dpy, gc_clip, 1);
     XSetForeground(dpy, gc_clip, 1);
@@ -192,8 +196,8 @@ void view_redraw() {
                 XSetBackground(dpy, gc, black.pixel);
                 XSetForeground(dpy, gc, black.pixel);
             }
-            XFillRectangle(dpy, wnd_buffer, gc, x*25, y*25, 20, 20);
-            XFillRectangle(dpy, clip_mask, gc_clip, x*25, y*25, 20, 20);
+            XFillRectangle(dpy, wnd_buffer, gc, x*grid_px+border_px, y*grid_px+border_px, cell_px, cell_px);
+            XFillRectangle(dpy, clip_mask, gc_clip, x*grid_px+border_px, y*grid_px+border_px, cell_px, cell_px);
         }
     }
 

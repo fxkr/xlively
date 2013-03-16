@@ -14,7 +14,7 @@ typedef enum {
 typedef struct config_t {
     int width;
     int height;
-    int pixel;
+    int grid;
     int border;
     WindowMode mode;
 } Config;

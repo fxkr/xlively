@@ -9,6 +9,7 @@
 #include<sys/types.h>
 #include<unistd.h>
 
+#include "config.h"
 #include "model.h"
 #include "view.h"
 
@@ -21,7 +22,7 @@ void ctrl_init() {
 }
 
 void ctrl_run() {
-    model_configure(20, 20);
+    model_configure(config.width, config.height);
     model_populate_randomly(0.2);
     ctrl_thread_start();
     view_run();

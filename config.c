@@ -22,8 +22,8 @@ void config_init(int argc, const char *argv[]) {
     // Set default values
     config.width = 0;
     config.height = 0;
-    config.pixel = 32;
-    config.border = 8;
+    config.grid = 32;
+    config.border = 4;
     config.mode = WINDOW;
 
     // Declare options
@@ -32,10 +32,10 @@ void config_init(int argc, const char *argv[]) {
             "use a fixed number of cells horizontally" },
         { "height", 'h', POPT_ARG_INT, &config.height, 0,
             "use a fixed number of cells vertically" },
-        { "pixel", 'p', POPT_ARG_INT, &config.pixel, 0,
-            "edge length of cells, in pixel" },
-        { "border", 'p', POPT_ARG_INT, &config.border, 8,
-            "space between cells, in pixel" },
+        { "grid", 'g', POPT_ARG_INT, &config.grid, 0,
+            "grid width, in pixel" },
+        { "border", 'b', POPT_ARG_INT, &config.border, 0,
+            "border around cells, in pixel" },
         { "root", 'r', POPT_ARG_VAL, &config.mode, ROOT,
             "use root window" },
         { "fullscreen", 'f', POPT_ARG_VAL, &config.mode, FULLSCREEN,
@@ -62,8 +62,10 @@ void config_init(int argc, const char *argv[]) {
         usage(context, "height", "not in [0..4096]");
     } else if (config.border < 1 || config.border > 256) {
         usage(context, "border", "not in [1..256]");
-    } else if (config.pixel < 1 || config.pixel > 256) {
-        usage(context, "pixel", "not in [1..256]");
+    } else if (config.grid < 1 || config.grid > 256) {
+        usage(context, "grid", "not in [1..256]");
+    } else if (!(config.grid > 2 * config.border)) {
+        usage(context, "grid", "must be at least twice as large as border");
     }
 
     poptFreeContext(context);
