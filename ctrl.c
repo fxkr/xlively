@@ -35,9 +35,7 @@ void ctrl_thread_start() {
 void ctrl_thread_run(void *ptr) {
     while (true) {
         sleep(1);
-        model_acquire_mutex();
         model_evolve();
-        model_release_mutex();
         view_notify();
     }
 }
