@@ -24,7 +24,7 @@ void config_init(int argc, const char *argv[]) {
     config.height = 0;
     config.grid = 32;
     config.border = 4;
-    config.mode = WINDOW;
+    config.mode = FULLSCREEN;
 
     // Declare options
     struct poptOption optionsTable[] = {
@@ -36,8 +36,8 @@ void config_init(int argc, const char *argv[]) {
             "grid width, in pixel" },
         { "border", 'b', POPT_ARG_INT, &config.border, 0,
             "border around cells, in pixel" },
-        { "root", 'r', POPT_ARG_VAL, &config.mode, ROOT,
-            "use root window" },
+        { "window", NULL, POPT_ARG_VAL, &config.mode, 0,
+            "run in windowed mode" },
         { "fullscreen", 'f', POPT_ARG_VAL, &config.mode, FULLSCREEN,
             "use a fullscreen window" },
         POPT_AUTOHELP
