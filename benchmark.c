@@ -9,7 +9,6 @@
 int main(int argc, const char *argv[]) {
     config_init(argc, argv);
     model_init();
-    model_acquire_mutex();
 
     model_configure(2048, 1024);
     model_populate_randomly(0.2);
@@ -18,7 +17,6 @@ int main(int argc, const char *argv[]) {
         model_evolve();
     }
 
-    model_release_mutex();
     model_exit();
     return 0;
 }

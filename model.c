@@ -123,7 +123,6 @@ void model_evolve() {
     char *temp = model.array;
     model.array = model.next_array;
     model.next_array = temp;
-
     model_release_mutex();
 }
 
