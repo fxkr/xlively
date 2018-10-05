@@ -10,6 +10,9 @@ I wrote it for fun, to practice C and to get to know Xlib.
 * Dependencies: Xlib, popt
 * Runs on: Linux
 
+Disclaimer: I wrote this in 2013. I was surprised it still works as of 2018
+(at least with Xorg. I didn't try to run it under Wayland.)
+
 
 How to use
 ----------
