@@ -16,10 +16,11 @@ How to use
 
 Build it with `make`. Then you can:
 
-* just run it in fullscreen mode: `xlively`
-* use it as an animated desktop background, run `xlively --root`.
-* use it with xscreensaver: add `xlively --xs \n\` to the `programs`
-section in `~/.xscreensaver`, then select it in `xscreensaver-demo`.
+* windowed mode: `xlively -w 100 -h 100 --window`
+* fullscreen mode: `xlively -f`
+* as an animated desktop background: `xlively --root`.
+* with xscreensaver: add `xlively --xs \n\` to the `programs`
+  section in `~/.xscreensaver`, then select it in `xscreensaver-demo`.
 
 There are various command line options; see `xlively --help`.
 
